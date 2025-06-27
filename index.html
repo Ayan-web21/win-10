@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Windows 10 Website</title>
+  <meta charset="UTF-8" />
+  <title>Windows 10 Web Desktop</title>
   <style>
     body {
       margin: 0;
       font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
       background: url('https://wallpaperaccess.com/full/2061704.jpg') no-repeat center center fixed;
       background-size: cover;
-      color: white;
       overflow: hidden;
     }
 
+    /* Taskbar */
     .taskbar {
       position: fixed;
       bottom: 0;
@@ -63,17 +63,35 @@
       background-color: rgba(255,255,255,0.3);
     }
 
+    /* Desktop Icons */
+    .desktop-icon {
+      width: 64px;
+      text-align: center;
+      margin: 10px;
+      cursor: pointer;
+      color: white;
+      font-size: 12px;
+      display: inline-block;
+    }
+
+    .desktop-icon img {
+      width: 48px;
+      height: 48px;
+    }
+
+    /* Windows */
     .window {
       position: absolute;
       top: 60px;
       left: 60px;
-      width: 300px;
+      width: 320px;
       background-color: rgba(40,40,40,0.95);
       border: 1px solid #444;
       border-radius: 6px;
       overflow: hidden;
       box-shadow: 0 0 10px #000;
       z-index: 5;
+      display: none;
     }
 
     .window-header {
@@ -114,32 +132,65 @@
   </style>
 </head>
 <body>
-  <!-- Fenster -->
-  <div class="window" id="window1">
+  <!-- Desktop Icons -->
+  <div style="position: absolute; top: 10px; left: 10px;">
+    <div class="desktop-icon" onclick="toggleWindow('app1')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Folder_icon_blue.svg" />
+      <div>Explorer</div>
+    </div>
+    <div class="desktop-icon" onclick="toggleWindow('app2')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Globe_icon.svg" />
+      <div>Browser</div>
+    </div>
+    <div class="desktop-icon" onclick="toggleWindow('app3')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Notepad_icon.png" />
+      <div>Notepad</div>
+    </div>
+  </div>
+
+  <!-- Windows -->
+  <div class="window" id="app1">
     <div class="window-header" id="header1">
-      <h1>Mein Fenster</h1>
-      <div class="close-button" onclick="closeWindow('window1')">×</div>
+      <h1>Explorer</h1>
+      <div class="close-button" onclick="closeWindow('app1')">×</div>
     </div>
     <div class="window-content">
-      <p>Dies ist ein verschiebbares Fenster mit JavaScript.</p>
+      <p>Hier ist der Explorer.</p>
+    </div>
+  </div>
+
+  <div class="window" id="app2">
+    <div class="window-header" id="header2">
+      <h1>Browser</h1>
+      <div class="close-button" onclick="closeWindow('app2')">×</div>
+    </div>
+    <div class="window-content">
+      <p>Hier könnte ein Browser sein.</p>
+    </div>
+  </div>
+
+  <div class="window" id="app3">
+    <div class="window-header" id="header3">
+      <h1>Notepad</h1>
+      <div class="close-button" onclick="closeWindow('app3')">×</div>
+    </div>
+    <div class="window-content">
+      <textarea style="width: 100%; height: 150px;">Notizen hier...</textarea>
     </div>
   </div>
 
   <!-- Taskbar -->
   <div class="taskbar">
-    <div class="start-button" title="Start" onclick="toggleWindow('window1')"></div>
+    <div class="start-button" title="Start"></div>
     <div class="taskbar-icons">
-      <div class="taskbar-icon" title="Explorer" onclick="toggleWindow('window1')">📁</div>
+      <div class="taskbar-icon" title="Explorer" onclick="toggleWindow('app1')">📁</div>
+      <div class="taskbar-icon" title="Browser" onclick="toggleWindow('app2')">🌐</div>
+      <div class="taskbar-icon" title="Notepad" onclick="toggleWindow('app3')">📝</div>
     </div>
   </div>
 
   <script>
-    // Fenster schließen
-    function closeWindow(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-
-    // Fenster öffnen oder ausblenden
+    // Fenster öffnen/schließen
     function toggleWindow(id) {
       const el = document.getElementById(id);
       if (el.style.display === 'none' || el.style.display === '') {
@@ -148,28 +199,29 @@
         el.style.display = 'none';
       }
     }
+    function closeWindow(id) {
+      document.getElementById(id).style.display = 'none';
+    }
 
-    // Drag & Drop
-    dragElement(document.getElementById("window1"), document.getElementById("header1"));
+    // Drag & Drop für alle Fenster
+    dragElement(document.getElementById("app1"), document.getElementById("header1"));
+    dragElement(document.getElementById("app2"), document.getElementById("header2"));
+    dragElement(document.getElementById("app3"), document.getElementById("header3"));
 
     function dragElement(elmnt, header) {
       let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
       if (header) {
         header.onmousedown = dragMouseDown;
       }
-
       function dragMouseDown(e) {
         e = e || window.event;
         e.preventDefault();
-        // Position beim Klick speichern
         pos3 = e.clientX;
         pos4 = e.clientY;
         document.onmouseup = closeDragElement;
         document.onmousemove = elementDrag;
-        // Fenster nach vorne bringen
         elmnt.style.zIndex = 1000;
       }
-
       function elementDrag(e) {
         e = e || window.event;
         e.preventDefault();
@@ -180,7 +232,6 @@
         elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
         elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
       }
-
       function closeDragElement() {
         document.onmouseup = null;
         document.onmousemove = null;
