@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Windows 10 Style Website</title>
+  <title>Windows 10 Website</title>
   <style>
     body {
       margin: 0;
@@ -10,9 +10,9 @@
       background: url('https://wallpaperaccess.com/full/2061704.jpg') no-repeat center center fixed;
       background-size: cover;
       color: white;
+      overflow: hidden;
     }
 
-    /* Taskbar */
     .taskbar {
       position: fixed;
       bottom: 0;
@@ -23,6 +23,7 @@
       display: flex;
       align-items: center;
       padding: 0 10px;
+      z-index: 10;
     }
 
     .start-button {
@@ -55,32 +56,33 @@
       justify-content: center;
       cursor: pointer;
       transition: background-color 0.2s;
+      font-size: 16px;
     }
 
     .taskbar-icon:hover {
       background-color: rgba(255,255,255,0.3);
     }
 
-    /* Example window */
     .window {
       position: absolute;
-      top: 50px;
-      left: 50px;
+      top: 60px;
+      left: 60px;
       width: 300px;
-      background-color: rgba(30,30,30,0.95);
+      background-color: rgba(40,40,40,0.95);
       border: 1px solid #444;
       border-radius: 6px;
       overflow: hidden;
       box-shadow: 0 0 10px #000;
+      z-index: 5;
     }
 
     .window-header {
       background-color: #0078d7;
       padding: 8px;
-      cursor: move;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      cursor: move;
     }
 
     .window-header h1 {
@@ -112,25 +114,78 @@
   </style>
 </head>
 <body>
-  <!-- Example Window -->
-  <div class="window" id="myWindow">
-    <div class="window-header">
+  <!-- Fenster -->
+  <div class="window" id="window1">
+    <div class="window-header" id="header1">
       <h1>Mein Fenster</h1>
-      <div class="close-button" onclick="document.getElementById('myWindow').style.display='none';">×</div>
+      <div class="close-button" onclick="closeWindow('window1')">×</div>
     </div>
     <div class="window-content">
-      Willkommen in deiner Windows-10-artigen Webseite!
+      <p>Dies ist ein verschiebbares Fenster mit JavaScript.</p>
     </div>
   </div>
 
   <!-- Taskbar -->
   <div class="taskbar">
-    <div class="start-button" title="Start"></div>
+    <div class="start-button" title="Start" onclick="toggleWindow('window1')"></div>
     <div class="taskbar-icons">
-      <div class="taskbar-icon" title="Explorer">📁</div>
-      <div class="taskbar-icon" title="Browser">🌐</div>
-      <div class="taskbar-icon" title="Mail">✉️</div>
+      <div class="taskbar-icon" title="Explorer" onclick="toggleWindow('window1')">📁</div>
     </div>
   </div>
+
+  <script>
+    // Fenster schließen
+    function closeWindow(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    // Fenster öffnen oder ausblenden
+    function toggleWindow(id) {
+      const el = document.getElementById(id);
+      if (el.style.display === 'none' || el.style.display === '') {
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    }
+
+    // Drag & Drop
+    dragElement(document.getElementById("window1"), document.getElementById("header1"));
+
+    function dragElement(elmnt, header) {
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      if (header) {
+        header.onmousedown = dragMouseDown;
+      }
+
+      function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // Position beim Klick speichern
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+        // Fenster nach vorne bringen
+        elmnt.style.zIndex = 1000;
+      }
+
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+  </script>
 </body>
 </html>
